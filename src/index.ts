@@ -1,0 +1,42 @@
+import express from "express";
+import postgres from "postgres";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
+import { drizzle } from "drizzle-orm/postgres-js";
+import {
+  errorHandler,
+  middlewareLogResponses,
+  middlewareMetricsInc,
+} from "./api/middleware.js";
+import {
+  handleHitCount,
+  handlerReadiness,
+  handleChirpValidation,
+} from "./api/handlers/handlers.js";
+import { handlerCreateUser } from "./api/handlers/users.js";
+import { handleReset } from "./api/handlers/reset.js";
+import { config } from "./config.js";
+
+const migrationClient = postgres(config.db.url, { max: 1 });
+await migrate(drizzle(migrationClient), config.db.migrationConfig);
+
+const app = express();
+const PORT = 8080;
+
+app.use(express.json());
+app.use(middlewareLogResponses);
+app.use("/app", middlewareMetricsInc, express.static("./src/app"));
+
+app.get("/api/healthz", handlerReadiness);
+app.get("/admin/metrics", handleHitCount);
+app.post("/admin/reset", handleReset);
+app.post("/api/chirps", async (req, res, next) => {
+  try {
+    await handleChirpValidation(req, res);
+  } catch (err) {
+    next(err);
+  }
+});
+app.post("/api/users", handlerCreateUser);
+
+app.use(errorHandler);
+app.listen(PORT);
