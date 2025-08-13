@@ -12,10 +12,11 @@ export const middlewareLogResponses = (
   res: Response,
   next: NextFunction
 ) => {
+  const status = res.statusCode
   res.on("finish", () => {
-    if (res.statusCode != 200) {
+    if (status >= 300) {
       console.log(
-        `[NON-OK] ${req.method} ${req.url} - Status: ${res.statusCode}`
+        `[NON-OK] ${req.method} ${req.url} - Status: ${status}`
       );
     }
   });

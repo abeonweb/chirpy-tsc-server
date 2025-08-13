@@ -15,6 +15,20 @@
       "when": 1754785826841,
       "tag": "0001_serious_scourge",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1754808095495,
+      "tag": "0002_awesome_mulholland_black",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1754814170094,
+      "tag": "0003_married_sandman",
+      "breakpoints": true
     }
   ]
 }
