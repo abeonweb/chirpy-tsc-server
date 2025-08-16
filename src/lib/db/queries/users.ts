@@ -16,6 +16,23 @@ export async function getUserByEmail(email: string) {
   return result;
 }
 
+export async function updateUserById(
+  id: string,
+  values: { email: string; hashedPassword: string }
+) {
+  const [result] = await db
+    .update(users)
+    .set(values)
+    .where(eq(users.id, id))
+    .returning({
+      id: users.id,
+      createdAt: users.createdAt,
+      email: users.email,
+      updatedAt: users.updatedAt,
+    });
+  return result;
+}
+
 export async function deleteUsers() {
   await db.delete(users);
 }

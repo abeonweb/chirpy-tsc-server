@@ -47,6 +47,6 @@ export const errorHandler = (
   } else if (err instanceof NotFoundError) {
     res.status(404).json({ error: err.message });
   } else {
-    console.log("500 Internal Server Error");
+    console.log("500 Internal Server Error", err);
   }
 };

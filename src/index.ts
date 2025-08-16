@@ -9,12 +9,19 @@ import {
   middlewareMetricsInc,
 } from "./api/middleware.js";
 import { handleHitCount, handlerReadiness } from "./api/handlers/handlers.js";
-import { handlerCreateUser, handlerLogin } from "./api/handlers/users.js";
+import {
+  handlerCreateUser,
+  handlerLogin,
+  handlerRefresh,
+  handlerRevoke,
+  handlerUpdateUser,
+} from "./api/handlers/users.js";
 import { handleReset } from "./api/handlers/reset.js";
 import {
   handleAddChirp,
   handleGetChirpById,
   handleGetChirps,
+  handleDeleteChirpById,
 } from "./api/handlers/chirps.js";
 
 const migrationClient = postgres(config.db.url, { max: 1 });
@@ -30,8 +37,12 @@ app.use("/app", middlewareMetricsInc, express.static("./src/app"));
 app.get("/api/healthz", handlerReadiness);
 app.get("/admin/metrics", handleHitCount);
 app.post("/admin/reset", handleReset);
-app.post("/api/users", handlerCreateUser);
 app.post("/api/login", handlerLogin);
+
+app.post("/api/users", handlerCreateUser);
+app.put("/api/users", handlerUpdateUser);
+app.post("/api/refresh", handlerRefresh);
+app.post("/api/revoke", handlerRevoke);
 
 app.post("/api/chirps", async (req, res, next) => {
   try {
@@ -50,6 +61,13 @@ app.get("/api/chirps", async (req, res, next) => {
 app.get("/api/chirps/:chirpID", async (req, res, next) => {
   try {
     await handleGetChirpById(req, res);
+  } catch (err) {
+    next(err);
+  }
+});
+app.delete("/api/chirps/:chirpID", async (req, res, next) => {
+  try {
+    await handleDeleteChirpById(req, res);
   } catch (err) {
     next(err);
   }

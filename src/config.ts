@@ -15,14 +15,6 @@ type DBConfig = {
   migrationConfig: MigrationConfig;
 };
 
-type APIConfig = {
-  api: {
-    fileServerHits: number;
-    platform: string;
-  };
-  db: DBConfig;
-};
-
 const migrationConfig: MigrationConfig = {
   migrationsFolder: "src/lib/db/migrations",
 };
@@ -32,12 +24,23 @@ const db: DBConfig = {
   migrationConfig,
 };
 
+
+type APIConfig = {
+  api: {
+    fileServerHits: number;
+    platform: string;
+  };
+  db: DBConfig;
+  jwtSecret: string;
+};
+
 const config: APIConfig = {
   api: {
     fileServerHits: 0,
     platform: envOrThrow("PLATFORM"),
   },
   db,
+  jwtSecret: envOrThrow("JWT_SECRET")
 };
 
 export { config };
